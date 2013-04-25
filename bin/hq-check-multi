@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+name = ARGV[0]
+states = (ARGV[1] || "").split(",").map { |state| state.to_i }
+
+num_ok = states.count { |state| state == 0 }
+num_warning = states.count { |state| state == 1 }
+num_critical = states.count { |state| state == 2 }
+num_unknown = states.count { |state| state == 3 }
+
+message = [
+	num_critical > 0 ? "#{num_critical} critical" : nil,
+	num_warning > 0 ? "#{num_warning} warning" : nil,
+	num_unknown > 0 ? "#{num_unknown} unknown" : nil,
+	"#{num_ok} ok",
+].select { |message| message }.join(", ")
+
+status = case
+	when num_critical > 0 then 2
+	when num_warning > 0 then 1
+	when num_unknown > 0 then 3
+	else 0
+end
+
+status_name = [ "OK", "WARNING", "CRITICAL", "UNKNOWN" ][status]
+
+puts "#{name} #{status_name}: #{message}"
+
+exit status
